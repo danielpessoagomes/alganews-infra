@@ -1,4 +1,4 @@
-version: '3.3'
+version: "3.3"
 
 networks:
   alganews-network:
@@ -30,7 +30,17 @@ services:
       - alganews-localstore-data:/storage
   alganews-api:
     image: algaworks/alganews-api:latest
-    command: ["/wait-for-it.sh", "-t", "30", "alganews-mysql-database:3306",  "--", "java", "-jar", "/app.jar"]
+    command:
+      [
+        "/wait-for-it.sh",
+        "-t",
+        "30",
+        "alganews-mysql-database:3306",
+        "--",
+        "java",
+        "-jar",
+        "/app.jar",
+      ]
     ports:
       - "8080:8080"
     depends_on:
@@ -41,7 +51,8 @@ services:
       JAVA_OPTS: "-Xms256m -Xmx1024m"
       SPRING_PROFILES_ACTIVE: "docker"
       SPRING_FLYWAY_LOCATIONS: "classpath:db/migration,classpath:db/testdata"
-      ALGANEWS_SECURITY_DISABLED: "false"
+      ALGANEWS_SECURITY_DISABLED: "true"
+      ALGANEWS_SECURITY_DEFAULT_USER_ID_IF_DISABLED: "1"
       SPRING_DATASOURCE_URL: "jdbc:mysql://alganews-mysql-database/alganews?createDatabaseIfNotExist=true&serverTimezone=UTC"
       SPRING_DATASOURCE_USERNAME: "alganews"
       SPRING_DATASOURCE_PASSWORD: "alganews"
@@ -53,7 +64,17 @@ services:
       - alganews-localstore-data:/storage
   alganews-auth:
     image: algaworks/alganews-auth-server:latest
-    command: ["/wait-for-it.sh", "-t", "30", "alganews-api:8080",  "--", "java", "-jar", "/app.jar"]
+    command:
+      [
+        "/wait-for-it.sh",
+        "-t",
+        "30",
+        "alganews-api:8080",
+        "--",
+        "java",
+        "-jar",
+        "/app.jar",
+      ]
     ports:
       - "8081:8081"
     networks:
